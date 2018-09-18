@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>{{headers.title}}</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7" crossorigin="anonymous">
+    <style type="text/css" mce_bogus="1">
+        img {
+            height: 1000px;
+            width: 750px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="row">
+            <div class="col-xs-12">
+                <h2 class="text-capitalize">{{headers.title}}</h2>
+                <p class='attribute'><strong>异常重跑: </strong>{{headers.rerun}}</p>
+                <p class='attribute'><strong>异常回调: </strong>{{headers.callback}}</p>
+                <p class='attribute'><strong>工程根目录: </strong>{{headers.root}}</p>
+                <p class='attribute'><strong>运行HTML: </strong>{{headers.html}}</p>
+                <p class='attribute'><strong>运行选项: </strong>{{headers.option}}</p>
+                <p class='attribute'><strong>开始时间: </strong>{{headers.start_time}}</p>
+                <p class='attribute'><strong>持续时间: </strong>{{headers.duration}}</p>
+                <p class='attribute'><strong>结果: </strong>{{headers.status}}</p>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-xs-12">
+                <table class='table table-hover table-responsive'>
+                    <thead>
+                        <tr>
+                            <th>DSC</th>
+                            <th>Vid  Pid</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for dsc, vid, pid, status, trackMessage, img_srcs in tests_results %}
+                            <tr class='{{status}}'>
+                                <td class="col-xs-9">{{dsc}}</td>
+                                <td class="col-xs-3">
+                                     <span class="label label-success">{{vid}}</span>
+                                     <span class="label label-success">{{pid}}</span>
+                                </td>
+
+                                <td class="col-xs-3">
+                                    <span class="label label-{{status}}">
+                                        {% if "success" == status %}
+                                            VAR_PASS
+                                        {% elif "info" == status %}
+                                            VAR_NOTRUN
+                                        {% elif "danger" == status%}
+                                            VAR_FAIL
+                                        {% else %}
+                                            VAR_ABORT
+                                        {% endif %}
+                                    </span>
+                                    &nbsp
+                                </td>
+                                <td class="col-xs-3">
+                                    <button class="btn btn-default btn-xs">View</button>
+                                </td>
+                            </tr>
+                            <tr style="display:none;">
+                                <td class="col-xs-12">
+                                    <p>{{trackMessage}}</p>
+                                </td>
+                            </tr>
+                            <tr style="display:none;">
+                                {% if img_srcs  %}
+                                    {% for img_src in img_srcs %}
+                                        <td class="col-xs-9">
+                                            <img src="{{img_src}}"><br/>{{ os.path.basename(img_src) }}</td>
+                                        </td>
+                                    {% endfor %}
+                                {% else %}
+                                    <td class="col-xs-9"></td>
+                                {% endif %}
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.4/jquery.min.js"></script>
+    <script type="text/javascript">
+        $(document).ready(function(){
+            $('td').on('click', '.btn', function(e){
+                e.preventDefault();
+                var $this = $(this);
+                var $nextRow1 = $this.closest('tr').next('tr');
+                var $nextRow2 = $nextRow1.closest('tr').next('tr');
+                $nextRow1.slideToggle("fast");
+                $nextRow2.slideToggle("fast");
+                $this.text(function(i, text){
+                    if (text === 'View') {
+                        return 'Hide';
+                    } else {
+                        return 'View';
+                    };
+                });
+            });
+        });
+    </script>
+</body>
+</html>
